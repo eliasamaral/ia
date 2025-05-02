@@ -1,0 +1,32 @@
+{
+	"name": "api",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {
+		"dev": "node --watch --env-file=../.env.local server.js",
+		"start": "node --watch server.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"packageManager": "pnpm@10.8.1",
+	"dependencies": {
+		"@langchain/community": "^0.3.41",
+		"@langchain/core": "^0.3.49",
+		"@langchain/langgraph": "^0.2.67",
+		"@langchain/openai": "^0.5.8",
+		"@langchain/qdrant": "^0.1.2",
+		"@langchain/textsplitters": "^0.1.0",
+		"@qdrant/js-client-rest": "^1.13.0",
+		"cors": "^2.8.5",
+		"express": "^5.1.0",
+		"langchain": "^0.3.24",
+		"multer": "1.4.5-lts.2",
+		"zod": "^3.24.3"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4"
+	}
+}
