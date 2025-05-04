@@ -27,9 +27,9 @@ services:
       - qdrant
     ports:
       - "3000:3000"
-   
-    extra_hosts:
-    - "host.docker.internal:host-gateway"
+
+    volumes:
+      - ./backend:/app
 
   frontend:
     build:
@@ -43,5 +43,7 @@ services:
     depends_on:
       - backend
     restart: always
+    volumes:
+      - ./frontend:/app
 volumes:
   qdrant:
