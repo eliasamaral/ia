@@ -12,6 +12,12 @@ services:
   #     - ./entrypoint.sh:/entrypoint.sh
   #     - ./logs:/logs
   #   entrypoint: [ "/bin/bash", "/entrypoint.sh" ]
+  #   healthcheck:
+  #     test: curl --fail http://localhost:11434 || exit 1
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 10s
 
   qdrant:
     image: qdrant/qdrant
@@ -19,30 +25,5 @@ services:
       - "6333:6333"
     volumes:
       - qdrant:/qdrant/storage
-  server:
-    build: ./server
-    restart: always
-    env_file: .env
-    depends_on:
-      - qdrant
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./server:/app
-
-  app:
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL}
-    env_file: .env
-    ports:
-      - "8080:80"
-    depends_on:
-      - backend
-    restart: always
-    volumes:
-      - ./app:/app
 volumes:
   qdrant:
