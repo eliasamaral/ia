@@ -11,6 +11,7 @@ import { TextLoader } from "langchain/document_loaders/fs/text";
 const EMBED_MODEL = process.env.OPENIA_EMBED_MODEL;
 const CHAT_MODEL = process.env.OPENIA_CHAT_MODEL;
 const OPENAI_AI = process.env.OPENAI_API_KEY;
+const COLLECTION_NAME = "filesRAG";
 
 const embeddings = new OpenAIEmbeddings({
 	apiKey: OPENAI_AI,
@@ -35,6 +36,10 @@ const generate = async (state) => {
 	const response = await llm.invoke(messages);
 	return { answer: response.content };
 };
+const vectorStore = await QdrantVectorStore.fromExistingCollection(embeddings, {
+	url: process.env.QDRANT_URL,
+	collectionName: COLLECTION_NAME,
+});
 
 const retrieve = async (state) => {
 	const retrievedDocs = await vectorStore.similaritySearch(state.question);
@@ -60,7 +65,6 @@ const graph = new StateGraph(StateAnnotation)
 	.addEdge("generate", "__end__")
 	.compile();
 
-const COLLECTION_NAME = "filesRAG";
 
 async function ensureCollectionExists() {
 	const aliases = await client.getCollectionAliases(COLLECTION_NAME);
@@ -73,10 +77,6 @@ async function ensureCollectionExists() {
 	}
 }
 
-const vectorStore = await QdrantVectorStore.fromExistingCollection(embeddings, {
-	url: process.env.QDRANT_URL,
-	collectionName: COLLECTION_NAME,
-});
 
 async function createBlob(buffer, type) {
 	return new Blob([buffer], { type });
@@ -127,14 +127,5 @@ export const RAGFileService = {
 			console.error(error);
 			throw error;
 		}
-	},
-
-	query: async (messages) => {
-		const inputs = { question: messages };
-
-		const result = await graph.invoke(inputs);
-		console.log("Chunk usados", result.context.length);
-
-		return { result: result.answer };
 	},
 };

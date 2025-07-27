@@ -1,7 +1,7 @@
 import { RAGFileService } from "../services/RAG_file_service.js";
 
 export const RAGFileController = {
-	newRAGFile: async (req, res) => {
+	newRAGFile: async (req, res) => {		
 		try {
 			if (!req.file) {
 				throw new Error("Nenhum arquivo enviado.");
@@ -15,7 +15,7 @@ export const RAGFileController = {
 
 			const data = {
 				group: req.body.group,
-				name: req.file.originalname,
+			name: req.file.originalname,
 				content: req.file,
 			};
 
@@ -29,16 +29,7 @@ export const RAGFileController = {
 			console.error("Erro no controller:", error);
 			res.status(500).json({ error: error.message });
 		}
-	},
+	}
 
-	query: async (req, res) => {
-		try {
-			const { messages } = req.body;
-			const result = await RAGFileService.query(messages);
-			res.status(200).json({ result });
-		} catch (error) {
-			console.error("Erro no controller:", error);
-			res.status(500).json({ error: "Erro ao processar o arquivo" });
-		}
-	},
+	
 };

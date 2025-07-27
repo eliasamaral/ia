@@ -7,17 +7,10 @@ const PORT = 3001;
 
 app.use(express.json());
 app.use(
-	cors({
-		origin: "http://app:8080",
-		credentials: true,
-		methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-		allowedHeaders: ["Content-Type", "Authorization"]
-	}),
+	cors(),
 );
-app.get('/health', (req, res) => {
-  res.status(200).send('OK');
-});
-app.use("/api/rag", RAGRoutes);
+
+app.use("/api", RAGRoutes);
 
 (async () => {
 	try {
