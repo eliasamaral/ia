@@ -19,21 +19,20 @@ services:
       - "6333:6333"
     volumes:
       - qdrant:/qdrant/storage
-  backend:
-    build: ./backend
+  server:
+    build: ./server
     restart: always
     env_file: .env
     depends_on:
       - qdrant
     ports:
       - "3000:3000"
-
     volumes:
-      - ./backend:/app
+      - ./server:/app
 
-  frontend:
+  app:
     build:
-      context: ./frontend
+      context: ./app
       dockerfile: Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL}
@@ -44,6 +43,6 @@ services:
       - backend
     restart: always
     volumes:
-      - ./frontend:/app
+      - ./app:/app
 volumes:
   qdrant:
