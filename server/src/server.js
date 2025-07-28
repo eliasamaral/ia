@@ -1,16 +1,15 @@
-import express from "express";
-import cors from "cors";
-import RAGRoutes from "./routes/RAG_file.js";
+import cors from 'cors';
+import express from 'express';
+import RAGRoutes from './routes/RAG_file.js';
+
 const app = express();
 
 const PORT = 3001;
 
 app.use(express.json());
-app.use(
-	cors(),
-);
+app.use(cors());
 
-app.use("/api", RAGRoutes);
+app.use('/api', RAGRoutes);
 
 (async () => {
 	try {
@@ -18,7 +17,7 @@ app.use("/api", RAGRoutes);
 			console.log(`✅ Server running on http://localhost:${PORT}`);
 		});
 	} catch (err) {
-		console.error("Erro ao iniciar o servidor:", err);
+		console.error('Erro ao iniciar o servidor:', err);
 		process.exit(1);
 	}
 })();
