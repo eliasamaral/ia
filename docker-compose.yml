@@ -25,5 +25,18 @@ services:
       - "6333:6333"
     volumes:
       - qdrant:/qdrant/storage
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: mydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
 volumes:
   qdrant:
+  postgres_data:

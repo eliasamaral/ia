@@ -1,5 +1,6 @@
+//import { signedUrl } from "../services/r2Service.js";
+import { randomUUID } from "node:crypto";
 import { RAGFileService } from "../services/RAG_file_service.js";
-import { signedUrl } from "../services/r2Service.js";
 
 export const RAGFileController = {
 	newRAGFile: async (req, res) => {
@@ -14,20 +15,21 @@ export const RAGFileController = {
 				throw new Error("Tipo de arquivo não é permitido.");
 			}
 
-			const data = {
-				group: req.body.group,
+			const metadata = {
 				name: req.file.originalname,
+				documentReference: randomUUID(),
+				extension: req.file.originalname.split(".").pop(),
 				content: req.file,
 			};
 
-			const result = await RAGFileService.newFile(data);
+			await RAGFileService.newFile(metadata);
 
-			const { url } = await signedUrl(data.name, req.file.mimetype);
+			//const { url } = await signedUrl(metadata.name, req.file.mimetype);
 
 			res.status(200).json({
 				message: "Arquivo processado com sucesso!",
 				//filePath: result,
-				url,
+				//url,
 			});
 		} catch (error) {
 			console.error("Erro no controller:", error);

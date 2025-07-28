@@ -1,7 +1,7 @@
 import cors from "cors";
 import express from "express";
-import RAGRoutes from "./routes/RAG_file.js";
 import ChatRoutes from "./routes/chat.js";
+import RAGRoutes from "./routes/RAG_file.js";
 
 const app = express();
 

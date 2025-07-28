@@ -9,3 +9,5 @@ dist
 dist-ssr
 .env.local
 .env
+
+/src/generated/prisma
