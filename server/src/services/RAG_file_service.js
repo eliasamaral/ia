@@ -5,11 +5,13 @@ import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { Document } from "langchain/document";
 import { TextLoader } from "langchain/document_loaders/fs/text";
 import { qdrantClient as client } from "./../database/qdrant/client.js";
+import { PrismaClient } from "../generated/prisma/client.js";
+const prisma = new PrismaClient();
 
 const EMBED_MODEL = process.env.OPENIA_EMBED_MODEL;
 const OPENAI_AI = process.env.OPENAI_API_KEY;
 
-const COLLECTION_NAME = "filesRAG";
+const COLLECTION_NAME = "files";
 
 const embeddings = new OpenAIEmbeddings({
 	apiKey: OPENAI_AI,
@@ -56,7 +58,7 @@ async function loadTextDocument(blob) {
 }
 
 export const RAGFileService = {
-	newFile: async ({ group, name, content }) => {
+	newFile: async ({ name, documentReference, extension, content }) => {
 		await ensureCollectionExists();
 
 		try {
@@ -79,10 +81,15 @@ export const RAGFileService = {
 			const allSplits = await splitter.splitDocuments([
 				new Document({
 					pageContent: doc[0].pageContent,
-					metadata: { group, name, createdAt: new Date() },
+					metadata: { name, documentReference, createdAt: new Date() },
 				}),
 			]);
+
 			await vectorStore.addDocuments(allSplits);
+			await prisma.file.create({
+				data: { name, documentReference, extension },
+			});
+
 			return vectorStore;
 		} catch (error) {
 			console.error(error);

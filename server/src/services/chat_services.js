@@ -6,7 +6,6 @@ import { pull } from 'langchain/hub';
 const EMBED_MODEL = process.env.OPENIA_EMBED_MODEL;
 const OPENAI_AI = process.env.OPENAI_API_KEY;
 const CHAT_MODEL = process.env.OPENIA_CHAT_MODEL;
-const COLLECTION_NAME = 'filesRAG';
 
 const promptTemplate = await pull('rlm/rag-prompt');
 
@@ -39,7 +38,7 @@ const generate = async (state) => {
 
 const vectorStore = await QdrantVectorStore.fromExistingCollection(embeddings, {
 	url: process.env.QDRANT_URL,
-	collectionName: COLLECTION_NAME,
+	collectionName: "files",
 });
 
 const retrieve = async (state) => {
