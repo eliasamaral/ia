@@ -36,4 +36,14 @@ export const RAGFileController = {
 			res.status(500).json({ error: error.message });
 		}
 	},
+
+	getAllFiles: async (req, res) => {
+		try {
+			const files = await RAGFileService.getAllFiles();
+			res.status(200).json(files);
+		} catch (error) {
+			console.error("Erro ao obter arquivos:", error);
+			res.status(500).json({ error: error.message });
+		}
+	}
 };

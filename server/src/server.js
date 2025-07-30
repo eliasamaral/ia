@@ -16,7 +16,7 @@ app.use(
 	}),
 );
 
-app.use("/file", RAGRoutes);
+app.use("/files", RAGRoutes);
 app.use("/chat", ChatRoutes);
 
 (async () => {
