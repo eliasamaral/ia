@@ -15,3 +15,209 @@
 		transform: rotate(360deg);
 	}
 }
+
+/* ChatFileInterface.css */
+
+/* Container principal */
+.chat-container {
+	display: flex;
+	height: 100vh;
+	background-color: #f9fafb; /* bg-gray-50 */
+}
+
+/* Sidebar - File List */
+.sidebar {
+	width: 20rem; /* w-80 */
+	background-color: #ffffff; /* bg-white */
+	border-right: 1px solid #e5e7eb; /* border-r border-gray-200 */
+	display: flex;
+	flex-direction: column;
+}
+
+.sidebar-header {
+	padding: 1rem; /* p-4 */
+	border-bottom: 1px solid #e5e7eb; /* border-b border-gray-200 */
+}
+
+.sidebar-title {
+	font-size: 1.125rem; /* text-lg */
+	font-weight: 600; /* font-semibold */
+	color: #1f2937; /* text-gray-800 */
+}
+
+.sidebar-scroll {
+	flex: 1;
+	padding: 1rem; /* p-4 */
+	overflow-y: auto; /* ScrollArea */
+}
+
+.file-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 0.75rem; /* gap-3 */
+}
+
+.file-card {
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.file-card:hover {
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* hover:shadow-md */
+}
+
+.file-card.selected {
+	box-shadow: 0 0 0 2px #3b82f6; /* ring-2 ring-blue-500 */
+}
+
+.card-content {
+	padding: 0.75rem; /* p-3 */
+}
+
+.file-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem; /* space-y-2 */
+}
+
+.file-thumbnail {
+	width: 4rem; /* w-16 */
+	height: 4rem; /* h-16 */
+	object-fit: cover;
+	border-radius: 0.25rem; /* rounded */
+}
+
+.file-placeholder {
+	width: 4rem; /* w-16 */
+	height: 4rem; /* h-16 */
+	background-color: #f3f4f6; /* bg-gray-100 */
+	border-radius: 0.25rem; /* rounded */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.file-name {
+	text-align: center;
+	font-size: 0.75rem; /* text-xs */
+	font-weight: 500; /* font-medium */
+	color: #1f2937; /* text-gray-800 */
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 100%;
+}
+
+.file-size {
+	text-align: center;
+	font-size: 0.75rem; /* text-xs */
+	color: #6b7280; /* text-gray-500 */
+}
+
+/* Main Chat Area */
+.main-chat {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.chat-header {
+	background-color: #ffffff; /* bg-white */
+	border-bottom: 1px solid #e5e7eb; /* border-b border-gray-200 */
+	padding: 1rem; /* p-4 */
+}
+
+.chat-title {
+	font-size: 1.25rem; /* text-xl */
+	font-weight: 600; /* font-semibold */
+	color: #1f2937; /* text-gray-800 */
+}
+
+.selected-file {
+	font-size: 0.875rem; /* text-sm */
+	color: #4b5563; /* text-gray-600 */
+	margin-top: 0.25rem; /* mt-1 */
+}
+
+.messages-area {
+	flex: 1;
+	padding: 1rem; /* p-4 */
+	overflow-y: auto; /* ScrollArea */
+}
+
+.message {
+	display: flex;
+	justify-content: flex-start; /* justify-start */
+	margin-bottom: 1rem; /* space-y-4 */
+}
+
+.message.user {
+	justify-content: flex-end; /* justify-end */
+}
+
+.message-box {
+	max-width: 16rem; /* max-w-xs */
+	padding: 0.5rem 1rem; /* px-4 py-2 */
+	border-radius: 0.5rem; /* rounded-lg */
+}
+
+.message.user .message-box {
+	background-color: #3b82f6; /* bg-blue-500 */
+	color: white;
+}
+
+.message.assistant .message-box {
+	background-color: white;
+	border: 1px solid #e5e7eb; /* border border-gray-200 */
+	color: #1f2937; /* text-gray-800 */
+}
+
+.message-time {
+	font-size: 0.75rem; /* text-xs */
+	margin-top: 0.25rem; /* mt-1 */
+}
+
+.message.user .message-time {
+	color: #bfdbfe; /* text-blue-100 */
+}
+
+.message.assistant .message-time {
+	color: #6b7280; /* text-gray-500 */
+}
+
+.input-area {
+	background-color: #ffffff; /* bg-white */
+	border-top: 1px solid #e5e7eb; /* border-t border-gray-200 */
+	padding: 1rem; /* p-4 */
+}
+
+.input-container {
+	max-width: 60rem; /* max-w-4xl */
+	margin: 0 auto;
+}
+
+.input-flex {
+	display: flex;
+	gap: 0.5rem; /* space-x-2 */
+}
+
+.input {
+	flex: 1;
+}
+
+.send-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #3b82f6; /* bg-blue-500 */
+	color: white;
+	padding: 0.5rem; /* size="icon" */
+	border-radius: 0.25rem; /* rounded */
+	cursor: pointer;
+}
+
+.send-button:disabled {
+	background-color: #d1d5db; /* bg-gray-300 */
+	cursor: not-allowed;
+}

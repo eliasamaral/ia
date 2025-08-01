@@ -8,5 +8,6 @@ const upload = multer({
 const router = express.Router();
 
 router.post('/upload', upload.single('file'), RAGFileController.newRAGFile);
+router.get('/', RAGFileController.getAllFiles);
 
 export default router;

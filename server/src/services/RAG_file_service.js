@@ -6,23 +6,13 @@ import { Document } from "langchain/document";
 import { TextLoader } from "langchain/document_loaders/fs/text";
 import { qdrantClient as client } from "./../database/qdrant/client.js";
 import { PrismaClient } from "../generated/prisma/client.js";
+
 const prisma = new PrismaClient();
 
 const EMBED_MODEL = process.env.OPENIA_EMBED_MODEL;
-const OPENAI_AI = process.env.OPENAI_API_KEY;
-
+const OPENAI_API = process.env.OPENAI_API_KEY;
+const QDRANT_URL = process.env.QDRANT_URL;
 const COLLECTION_NAME = "files";
-
-const embeddings = new OpenAIEmbeddings({
-	apiKey: OPENAI_AI,
-	batchSize: 2048,
-	model: EMBED_MODEL,
-});
-
-const vectorStore = await QdrantVectorStore.fromExistingCollection(embeddings, {
-	url: process.env.QDRANT_URL,
-	collectionName: COLLECTION_NAME,
-});
 
 const splitter = new RecursiveCharacterTextSplitter({
 	chunkSize: 5000,
@@ -31,12 +21,15 @@ const splitter = new RecursiveCharacterTextSplitter({
 });
 
 async function ensureCollectionExists() {
-	const aliases = await client.getCollectionAliases(COLLECTION_NAME);
+	const collections = await client.getCollections();
+	const exists = collections.collections.some(
+		(c) => c.name === COLLECTION_NAME,
+	);
 
-	if (!aliases || aliases.length === 0) {
+	if (!exists) {
 		console.log(`Criando coleção ${COLLECTION_NAME}...`);
 		await client.createCollection(COLLECTION_NAME, {
-			vectors: { size: 2048, distance: "Cosine" },
+			vectors: { size: 3072, distance: "Cosine" },
 		});
 	}
 }
@@ -59,41 +52,75 @@ async function loadTextDocument(blob) {
 
 export const RAGFileService = {
 	newFile: async ({ name, documentReference, extension, content }) => {
+		if (!content?.buffer || !content?.mimetype) {
+			throw new Error("Arquivo inválido ou incompleto.");
+		}
+
 		await ensureCollectionExists();
 
-		try {
-			let doc;
-			const blob = await createBlob(content.buffer, content.mimetype);
+		let doc;
+		const blob = await createBlob(content.buffer, content.mimetype);
 
-			switch (content.mimetype) {
-				case "application/pdf":
-					doc = await loadPDFDocument(blob);
-					break;
+		switch (content.mimetype) {
+			case "application/pdf":
+				doc = await loadPDFDocument(blob);
+				break;
 
-				case "text/plain":
-					doc = await loadTextDocument(blob);
-					break;
+			case "text/plain":
+				doc = await loadTextDocument(blob);
+				break;
 
-				default:
-					throw new Error(`Tipo de arquivo não suportado: ${content.mimetype}`);
-			}
-
-			const allSplits = await splitter.splitDocuments([
-				new Document({
-					pageContent: doc[0].pageContent,
-					metadata: { name, documentReference, createdAt: new Date() },
-				}),
-			]);
-
-			await vectorStore.addDocuments(allSplits);
-			await prisma.file.create({
-				data: { name, documentReference, extension },
-			});
-
-			return vectorStore;
-		} catch (error) {
-			console.error(error);
-			throw error;
+			default:
+				throw new Error(`Tipo de arquivo não suportado: ${content.mimetype}`);
 		}
+
+		const fullText = doc.map((d) => d.pageContent).join("\n");
+
+		const baseDoc = new Document({
+			pageContent: fullText,
+			metadata: {
+				name,
+				documentReference,
+				createdAt: new Date(),
+			},
+		});
+
+		const allSplits = await splitter.splitDocuments([baseDoc]);
+
+		// Adiciona metadados extras em cada chunk
+		allSplits.forEach((doc, idx) => {
+			doc.metadata.chunkIndex = idx;
+			doc.metadata.totalChunks = allSplits.length;
+		});
+
+		const embeddings = new OpenAIEmbeddings({
+			apiKey: OPENAI_API,
+			batchSize: 3072,
+			model: EMBED_MODEL,
+		});
+
+		const vectorStore = await QdrantVectorStore.fromExistingCollection(
+			embeddings,
+			{
+				url: QDRANT_URL,
+				collectionName: COLLECTION_NAME,
+			},
+		);
+
+		await vectorStore.addDocuments(allSplits);
+
+		await prisma.file.create({
+			data: {
+				name,
+				documentReference,
+				extension,
+			},
+		});
+
+		return { success: true, chunks: allSplits.length };
+	},
+
+	getAllFiles: async () => {
+		return await prisma.file.findMany();
 	},
 };
